@@ -74,6 +74,10 @@ services:
         traefik.http.routers.api.service: api@internal
         traefik.http.routers.api.middlewares: auth
         traefik.http.routers.api.entrypoints: web,traefik
+        traefik.http.routers.ping.rule: host(`localhost`) && PathPrefix(`/ping`)
+        traefik.http.routers.ping.service: ping@internal
+        traefik.http.routers.ping.middlewares: auth
+        traefik.http.routers.ping.entrypoints: web,traefik
         traefik.http.middlewares.auth.basicauth.users: admin:$$apr1$$7uONeTCN$$eLRiemf3TW1pySUhLLKCp0
         # Dummy service for Swarm port detection. The port can be any valid integer value.
         traefik.http.services.dummy-svc.loadbalancer.server.port: 9999
