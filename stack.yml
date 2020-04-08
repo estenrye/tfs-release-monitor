@@ -14,12 +14,12 @@ services:
       - --api.dashboard
       - --api.debug=false
       - --entryPoints.web.address=:80
-      # - --entryPoints.websecure
-      # - --entryPoints.websecure.address=:443
-      # - --entrypoints.websecure.http.tls.certResolver=leresolver
-      # - --certificatesResolvers.leresolver.acme.email=esten.rye@ryezone.com
-      # - --certificatesResolvers.leresolver.acme.storage=acme.json
-      # - --certificatesResolvers.leresolver.acme.httpChallenge.entryPoint=web
+      - --entryPoints.websecure
+      - --entryPoints.websecure.address=:443
+      - --entrypoints.websecure.http.tls.certResolver=leresolver
+      - --certificatesResolvers.leresolver.acme.email=esten.rye@ryezone.com
+      - --certificatesResolvers.leresolver.acme.storage=acme.json
+      - --certificatesResolvers.leresolver.acme.httpChallenge.entryPoint=web
       - --entryPoints.metrics.address=:8082
       # - --entrypoints.traefik.address=:8080
       - --log
@@ -74,7 +74,7 @@ services:
         traefik.http.routers.ping.rule: host(`traefik.seis635.ryezone.com`) && PathPrefix(`/ping`)
         traefik.http.routers.ping.service: ping@internal
         traefik.http.routers.ping.middlewares: auth
-        traefik.http.routers.ping.entrypoints: web,traefik
+        traefik.http.routers.ping.entrypoints: web,websecure,traefik
         traefik.http.middlewares.auth.basicauth.usersfile: /run/secrets/usersfile
         # Dummy service for Swarm port detection. The port can be any valid integer value.
         traefik.http.services.dummy-svc.loadbalancer.server.port: 9999
@@ -93,7 +93,7 @@ services:
         applicationPrefix: jaeger
         traefik.http.middlewares.auth.basicauth.usersfile: /run/secrets/usersfile
         traefik.http.routers.jaeger.middlewares: auth
-        traefik.http.routers.jaeger.entrypoints: web
+        traefik.http.routers.jaeger.entrypoints: web,websecure
         traefik.http.services.jaeger.loadbalancer.server.port: 16686
     networks:
       - dmz
