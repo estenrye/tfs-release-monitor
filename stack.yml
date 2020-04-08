@@ -69,10 +69,10 @@ services:
         monitor: 30s
         order: start-first
       labels:
-        traefik.http.routers.api.rule: Host(`traefik.seis635.ryezone.com`)
-        traefik.http.routers.api.service: api@internal
-        traefik.http.routers.api.middlewares: auth
-        traefik.http.middlewares.api.basicauth.usersfile: /run/secrets/usersfile
+        applicationPrefix: traefik
+        traefik.http.routers.traefik.service: api@internal
+        traefik.http.routers.traefik.middlewares: auth
+        traefik.http.middlewares.traefik.basicauth.usersfile: /run/secrets/usersfile
         traefik.services.traefik.loadbalancer.server.port: 8080
     networks:
       - dmz
