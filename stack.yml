@@ -12,7 +12,7 @@ services:
       - --accesslog.format=json
       - --api
       - --api.dashboard
-      - --api.debug=true
+      - --api.debug=false
       - --entryPoints.web.address=:80
       # - --entryPoints.websecure
       # - --entryPoints.websecure.address=:443
@@ -24,7 +24,7 @@ services:
       # - --entrypoints.traefik.address=:8080
       - --log
       - --log.format=json
-      - --log.level=debug
+      - --log.level=info
       - --ping
       - --ping.entrypoint=traefik
       - --providers.docker=true
@@ -84,15 +84,15 @@ services:
       - source: traefik_usersfile
         target: usersfile
 
-  # jaeger:
-  #   image: jagertracing/all-in-one:1.17
-  #   environment:
-  #     COLLECTOR_ZIPKIN_HTTP_PORT: 9411
-  #   deploy:
-  #     labels:
-  #       applicationPrefix: jaeger
-  #       traefik.http.routers.jaeger.entrypoints: websecure
-  #       traefik.http.services.jaeger.loadbalancer.server.port: 16686
+  jaeger:
+    image: jaegertracing/all-in-one:1.17.1
+    environment:
+      COLLECTOR_ZIPKIN_HTTP_PORT: 9411
+    deploy:
+      labels:
+        applicationPrefix: jaeger
+        traefik.http.routers.jaeger.entrypoints: web
+        traefik.http.services.jaeger.loadbalancer.server.port: 16686
 
 secrets:
   traefik_usersfile:
