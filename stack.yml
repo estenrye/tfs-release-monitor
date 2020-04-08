@@ -1,0 +1,93 @@
+version: "3.7"
+networks:
+  dmz:
+    name: public
+  internal:
+    name: private
+services:
+  traefik:
+    image: traefik:2.0.1
+    command:
+      - --accesslog
+      - --accesslog.format=json
+      - --api
+      - --api.dashboard
+      - --api.debug=${API_DEBUG:-false}
+      - --entryPoints.web.address=:80
+      - --entryPoints.websecure.address=:443
+      - --entrypoints.websecure.http.tls.certResolver=leresolver
+      - --certificatesResolvers.leresolver.acme.email=esten.rye@ryezone.com
+      - --certificatesResolvers.leresolver.acme.storage=acme.json
+      - --certificatesResolvers.leresolver.acme.httpChallenge.entryPoint=web
+      - --entrypoints.metrics
+      - --entryPoints.metrics.address=:8082
+      - --entrypoints.traefik.address=:8080
+      - --log
+      - --log.format=json
+      - --log.level=info
+      - --ping
+      - --ping.entrypoint=traefik
+      - --providers.docker=true
+      - --providers.docker.defaultRule=Host(`{{ index .Labels "applicationPrefix" }}.seis635.ryezone.com`)
+      - --providers.docker.exposedbydefault=true
+      - --providers.docker.network=public
+      - --providers.docker.swarmMode=true
+      - --providers.docker.swarmModeRefreshSeconds=${SWARM_REFRESH_SECONDS:-30}
+      - --providers.docker.watch=true
+      # - --tracing=true
+      # - --tracing.serviceName=traefik
+      # - --tracing.jaeger.collector.endpoint=http://jaeger:14268/api/traces?format=jaeger.thrift
+      # - --metrics.prometheus=true
+      # - --metrics.prometheus.entryPoint=metrics
+    volumes:
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        read_only: true
+    ports:
+      - target: 443
+        published: 443
+        protocol: tcp
+        mode: ingress
+      - target: 80
+        published: 80
+        protocol: tcp
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 5
+        window: 20s
+      update_config:
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      labels:
+        traefik.http.routers.api.rule: Host(`traefik.seis635.ryezone.com`)
+        traefik.http.routers.api.service: api@internal
+        traefik.http.routers.api.middlewares: auth
+        traefik.http.middlewares.api.basicauth.usersfile: /run/secrets/usersfile
+        traefik.services.traefik.loadbalancer.server.port: 8080
+    networks:
+      - dmz
+    secrets:
+      - source: traefik_usersfile
+        target: usersfile
+
+  # jaeger:
+  #   image: jagertracing/all-in-one:1.17
+  #   environment:
+  #     COLLECTOR_ZIPKIN_HTTP_PORT: 9411
+  #   deploy:
+  #     labels:
+  #       applicationPrefix: jaeger
+  #       traefik.http.routers.jaeger.entrypoints: websecure
+  #       traefik.http.services.jaeger.loadbalancer.server.port: 16686
+
+secrets:
+  traefik_usersfile:
+    external: true
