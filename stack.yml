@@ -71,9 +71,10 @@ services:
         order: start-first
       labels:
         applicationPrefix: traefik
+        traefik.http.routers.traefik.service: api@internal
         # traefik.http.routers.traefik.middlewares: auth
         # traefik.http.middlewares.traefik.basicauth.usersfile: /run/secrets/usersfile
-        traefik.services.traefik.loadbalancer.server.port: 8080
+        traefik.services.dummyservice.loadbalancer.server.port: 8080
     networks:
       - dmz
     secrets:
