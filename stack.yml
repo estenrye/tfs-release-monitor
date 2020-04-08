@@ -13,7 +13,9 @@ services:
       - --api
       - --api.dashboard
       - --api.debug=${API_DEBUG:-false}
+      - --entryPoints.web
       - --entryPoints.web.address=:80
+      - --entryPoints.websecure
       - --entryPoints.websecure.address=:443
       - --entrypoints.websecure.http.tls.certResolver=leresolver
       - --certificatesResolvers.leresolver.acme.email=esten.rye@ryezone.com
