@@ -6,7 +6,7 @@ networks:
     name: private
 services:
   traefik:
-    image: traefik:2.0.1
+    image: traefik:2.2
     command:
       - --accesslog
       - --accesslog.format=json
@@ -70,11 +70,11 @@ services:
         monitor: 30s
         order: start-first
       labels:
-        applicationPrefix: traefik
-        traefik.http.routers.traefik.service: api@internal
-        # traefik.http.routers.traefik.middlewares: auth
+        traefik.http.routers.api.rule: Host(`traefik.seis635.ryezone.com`)
+        traefik.http.routers.api.service: api@internal
+        # traefik.http.api.traefik.middlewares: auth
         # traefik.http.middlewares.traefik.basicauth.usersfile: /run/secrets/usersfile
-        traefik.services.dummyservice.loadbalancer.server.port: 8080
+        traefik.services.dummy-svc.loadbalancer.server.port: 9999
     networks:
       - dmz
     secrets:
