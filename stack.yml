@@ -92,7 +92,10 @@ services:
       labels:
         applicationPrefix: jaeger
         traefik.http.middlewares.auth.basicauth.usersfile: /run/secrets/usersfile
-        traefik.http.routers.jaeger.middlewares: auth
+        traefik.http.middlewares.redirectscheme.redirectscheme.scheme: https
+        traefik.http.middlewares.redirectscheme.redirectscheme.port: 443
+        traefik.http.middlewares.redirectscheme.redirectscheme.permanent: "true"
+        traefik.http.routers.jaeger.middlewares: redirectscheme,auth
         traefik.http.routers.jaeger.entrypoints: websecure
         traefik.http.services.jaeger.loadbalancer.server.port: 16686
     networks:
