@@ -11,8 +11,9 @@ services:
       - --accesslog
       - --accesslog.format=json
       - --api
+      - --api.insecure
       - --api.dashboard
-      - --api.debug=${API_DEBUG:-false}
+      - --api.debug=false
       - --entryPoints.web
       - --entryPoints.web.address=:80
       # - --entryPoints.websecure
@@ -70,9 +71,8 @@ services:
         order: start-first
       labels:
         applicationPrefix: traefik
-        traefik.http.routers.traefik.service: api@internal
-        traefik.http.routers.traefik.middlewares: auth
-        traefik.http.middlewares.traefik.basicauth.usersfile: /run/secrets/usersfile
+        # traefik.http.routers.traefik.middlewares: auth
+        # traefik.http.middlewares.traefik.basicauth.usersfile: /run/secrets/usersfile
         traefik.services.traefik.loadbalancer.server.port: 8080
     networks:
       - dmz
