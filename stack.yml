@@ -98,6 +98,18 @@ services:
     networks:
       - dmz
 
+  # redis:
+  #   image: redis:6.0-rc3
+  #   deploy:
+  #     labels:
+  #       applicationPrefix: redis
+  #       traefik.http.middlewares.auth.basicauth.usersfile: /run/secrets/usersfile
+  #       traefik.http.routers.redis.middlewares: auth
+  #       traefik.http.routers.redis.entrypoints: websecure
+  #       traefik.http.services.redis.loadbalancer.server.port: 6379
+  #   networks:
+  #     - dmz
+
 secrets:
   traefik_usersfile:
     external: true
