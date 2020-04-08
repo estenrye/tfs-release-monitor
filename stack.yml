@@ -52,9 +52,6 @@ services:
       - target: 80
         published: 80
         protocol: tcp
-      - target: 8080
-        published: 8080
-        protocol: tcp
     deploy:
       mode: global
       placement:
@@ -78,7 +75,7 @@ services:
         traefik.http.routers.ping.service: ping@internal
         traefik.http.routers.ping.middlewares: auth
         traefik.http.routers.ping.entrypoints: web,traefik
-        traefik.http.middlewares.auth.basicauth.users: admin:$$apr1$$7uONeTCN$$eLRiemf3TW1pySUhLLKCp0
+        traefik.http.middlewares.auth.basicauth.usersfile: /run/secrets/usersfile
         # Dummy service for Swarm port detection. The port can be any valid integer value.
         traefik.http.services.dummy-svc.loadbalancer.server.port: 9999
     networks:
