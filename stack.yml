@@ -93,6 +93,8 @@ services:
         applicationPrefix: jaeger
         traefik.http.routers.jaeger.entrypoints: web
         traefik.http.services.jaeger.loadbalancer.server.port: 14269
+    networks:
+      - dmz
 
 secrets:
   traefik_usersfile:
