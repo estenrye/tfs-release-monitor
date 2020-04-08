@@ -67,11 +67,11 @@ services:
         monitor: 30s
         order: start-first
       labels:
-        traefik.http.routers.api.rule: Host(`localhost`)
+        traefik.http.routers.api.rule: Host(`traefik.seis635.ryezone.com`)
         traefik.http.routers.api.service: api@internal
         traefik.http.routers.api.middlewares: auth
         traefik.http.routers.api.entrypoints: web,traefik
-        traefik.http.routers.ping.rule: host(`localhost`) && PathPrefix(`/ping`)
+        traefik.http.routers.ping.rule: host(`traefik.seis635.ryezone.com`) && PathPrefix(`/ping`)
         traefik.http.routers.ping.service: ping@internal
         traefik.http.routers.ping.middlewares: auth
         traefik.http.routers.ping.entrypoints: web,traefik
