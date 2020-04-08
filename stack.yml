@@ -15,12 +15,12 @@ services:
       - --api.debug=${API_DEBUG:-false}
       - --entryPoints.web
       - --entryPoints.web.address=:80
-      - --entryPoints.websecure
-      - --entryPoints.websecure.address=:443
-      - --entrypoints.websecure.http.tls.certResolver=leresolver
-      - --certificatesResolvers.leresolver.acme.email=esten.rye@ryezone.com
-      - --certificatesResolvers.leresolver.acme.storage=acme.json
-      - --certificatesResolvers.leresolver.acme.httpChallenge.entryPoint=web
+      # - --entryPoints.websecure
+      # - --entryPoints.websecure.address=:443
+      # - --entrypoints.websecure.http.tls.certResolver=leresolver
+      # - --certificatesResolvers.leresolver.acme.email=esten.rye@ryezone.com
+      # - --certificatesResolvers.leresolver.acme.storage=acme.json
+      # - --certificatesResolvers.leresolver.acme.httpChallenge.entryPoint=web
       - --entrypoints.metrics
       - --entryPoints.metrics.address=:8082
       - --entrypoints.traefik.address=:8080
