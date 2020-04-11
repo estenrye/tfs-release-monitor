@@ -45,11 +45,11 @@ services:
         monitor: 30s
         order: start-first
       labels:
-        traefik.http.routers.api.rule: Host(`${TOP_LEVEL_DOMAIN:-localhost}`)
+        traefik.http.routers.api.rule: Host(`traefik.${TOP_LEVEL_DOMAIN:-localhost}`)
         traefik.http.routers.api.service: api@internal
         traefik.http.routers.api.middlewares: auth
         traefik.http.routers.api.entrypoints: ${TRAEFIK_WEB_ENTRYPOINT:-web},traefik
-        traefik.http.routers.ping.rule: host(`${TOP_LEVEL_DOMAIN:-localhost}`) && PathPrefix(`/ping`)
+        traefik.http.routers.ping.rule: host(`traefik.${TOP_LEVEL_DOMAIN:-localhost}`) && PathPrefix(`/ping`)
         traefik.http.routers.ping.service: ping@internal
         traefik.http.routers.ping.middlewares: auth
         traefik.http.routers.ping.entrypoints: ${TRAEFIK_WEB_ENTRYPOINT:-web},traefik
