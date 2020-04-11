@@ -168,6 +168,8 @@ services:
         applicationPrefix: alertmanager
         traefik.http.routers.alertmanager.entrypoints: ${TRAEFIK_WEB_ENTRYPOINT:-web}
         traefik.http.services.alertmanager.loadbalancer.server.port: 9093
+        traefik.http.routers.alertmanager.middlewares: auth
+        traefik.http.middlewares.auth.basicauth.usersfile: /run/secrets/usersfile
       placement:
         constraints:
           - node.role==manager
@@ -200,6 +202,8 @@ services:
         applicationPrefix: cadvisor
         traefik.http.routers.cadvisor.entrypoints: ${TRAEFIK_WEB_ENTRYPOINT:-web}
         traefik.http.services.cadvisor.loadbalancer.server.port: 8080
+        traefik.http.routers.cadvisor.middlewares: auth
+        traefik.http.middlewares.auth.basicauth.usersfile: /run/secrets/usersfile
       mode: global
       restart_policy:
           condition: on-failure
