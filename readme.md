@@ -66,3 +66,15 @@ docker stack deploy -c stack.yml -c stack.production.yml seis635
 * [Prometheus](https://prometheus.seis635.ryezone.com)
 * [Alert Manager](https://alertmanager.seis635.ryezone.com)
 * [cAdvisor](https://cadvisor.seis635.ryezone.com)
+
+# Pre-build Grafana Dashboards Used
+
+### Docker Dashboards
+
+* [vegasbrianc/prometheus](https://github.com/vegasbrianc/prometheus)
+
+### Traefik Dashboards
+
+* https://grafana.com/grafana/dashboards/11462
+* https://grafana.com/grafana/dashboards/9357
+* [vegasbrianc/docker-traefik-prometheus](https://github.com/vegasbrianc/docker-traefik-prometheus)

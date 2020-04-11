@@ -10,6 +10,7 @@ volumes:
   prometheus_data: {}
   grafana_data: {}
   traefik_data: {}
+  mongodb_data: {}
 
 services:
   traefik:
@@ -222,6 +223,7 @@ services:
     environment:
       GF_USERS_ALLOW_SIGN_UP: 'false'
       GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/admin_password
+      GF_INSTALL_PLUGINS: grafana-piechart-panel
     secrets:
       - source: grafana_admin_password
         target: admin_password
@@ -239,6 +241,19 @@ services:
         applicationPrefix: grafana
         traefik.http.routers.grafana.entrypoints: ${TRAEFIK_WEB_ENTRYPOINT:-web}
         traefik.http.services.grafana.loadbalancer.server.port: 3000
+
+  # mongodb:
+  #   image: mongodb:3
+  #   volumes:
+  #     - type: volume
+  #       source: mongodb_data
+  #       target: /data/db
+  #   deploy:
+  #     labels:
+  #       traefik.enable: 'false'
+  #   networks:
+  #     - internal
+    
 secrets:
   traefik_usersfile:
     external: true
