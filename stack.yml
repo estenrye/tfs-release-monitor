@@ -159,6 +159,7 @@ services:
         target: /etc/alertmanager
     networks:
       - monitor-net
+      - dmz
     command:
       - --config.file=/etc/alertmanager/config.yml
       - --storage.path=/alertmanager
@@ -193,6 +194,7 @@ services:
         read_only: true
     networks:
       - monitor-net
+      - dmz
     deploy:
       labels:
         applicationPrefix: cadvisor
