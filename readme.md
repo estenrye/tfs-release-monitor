@@ -58,3 +58,9 @@ $env:LETS_ENCRYPT_EMAIL = 'noreply@your-domain.com'
 $env:TRAEFIK_WEB_ENTRYPOINT='websecure'
 docker stack deploy -c stack.yml -c stack.production.yml seis635
 ```
+
+# Example Sites
+* [Traefik Dashboard](https://traefik.seis635.ryezone.com)
+* [Jaeger](https://jaeger.seis635.ryezone.com)
+* [Grafana](htps://grafana.seis635.ryezone.com)
+* [Prometheus](https://prometheus.seis635.ryezone.com)
