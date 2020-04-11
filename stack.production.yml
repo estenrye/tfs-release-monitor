@@ -35,4 +35,3 @@ services:
       - --metrics.prometheus.addEntryPointsLabels=true
       - --metrics.prometheus.addServicesLabels=true
       - --metrics.prometheus.entryPoint=metrics
-  deploy:
