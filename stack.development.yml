@@ -1,0 +1,31 @@
+version: "3.7"
+services:
+  traefik:
+    command:
+      - --accesslog
+      - --accesslog.format=json
+      - --api
+      - --api.dashboard
+      - --api.debug=false
+      - --entryPoints.web.address=:80
+      - --log
+      - --log.format=json
+      - --log.level=info
+      - --ping
+      - --ping.entrypoint=traefik
+      - --providers.docker=true
+      - --providers.docker.defaultRule=Host(`{{ index .Labels "applicationPrefix" }}.${TOP_LEVEL_DOMAIN:-localhost}`)
+      - --providers.docker.exposedbydefault=true
+      - --providers.docker.network=public
+      - --providers.docker.swarmMode=true
+      - --providers.docker.swarmModeRefreshSeconds=${SWARM_REFRESH_SECONDS:-30}
+      - --providers.docker.watch=true
+      - --tracing=true
+      - --tracing.serviceName=traefik
+      - --tracing.jaeger.collector.endpoint=http://jaeger:14268/api/traces?format=jaeger.thrift
+      - --entryPoints.metrics.address=:8082
+      - --metrics.prometheus=true
+      - --metrics.prometheus.buckets=0.100000, 0.300000, 1.200000, 5.000000
+      - --metrics.prometheus.addEntryPointsLabels=true
+      - --metrics.prometheus.addServicesLabels=true
+      - --metrics.prometheus.entryPoint=metrics
