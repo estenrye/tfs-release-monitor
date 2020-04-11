@@ -147,6 +147,8 @@ services:
     networks:
       - monitor-net
     deploy:
+      labels:
+        traefik.enable: 'false'
       mode: global
       restart_policy:
           condition: on-failure
@@ -165,6 +167,8 @@ services:
       - --config.file=/etc/alertmanager/config.yml
       - --storage.path=/alertmanager
     deploy:
+      labels:
+        traefik.enable: 'false'
       placement:
         constraints:
           - node.role==manager
@@ -194,6 +198,8 @@ services:
     networks:
       - monitor-net
     deploy:
+      labels:
+        traefik.enable: 'false'
       mode: global
       restart_policy:
           condition: on-failure
