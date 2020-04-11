@@ -64,3 +64,5 @@ docker stack deploy -c stack.yml -c stack.production.yml seis635
 * [Jaeger](https://jaeger.seis635.ryezone.com)
 * [Grafana](htps://grafana.seis635.ryezone.com)
 * [Prometheus](https://prometheus.seis635.ryezone.com)
+* [Alert Manager](https://alertmanager.seis635.ryezone.com)
+* [cAdvisor](https://cadvisor.seis635.ryezone.com)
