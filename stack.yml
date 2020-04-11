@@ -102,8 +102,6 @@ services:
       - --storage.tsdb.path=/prometheus
       - --web.console.libraries=/usr/share/prometheus/console_libraries
       - --web.console.templates=/usr/share/prometheus/consoles
-    ports:
-      - 9090:9090
     depends_on:
       - cadvisor
     networks:
@@ -155,8 +153,6 @@ services:
 
   alertmanager:
     image: prom/alertmanager
-    ports:
-      - 9093:9093
     volumes:
       - type: bind
         source: ${PWD}/alertmanager
@@ -168,7 +164,9 @@ services:
       - --storage.path=/alertmanager
     deploy:
       labels:
-        traefik.enable: 'false'
+        applicationPrefix: alertmanager
+        traefik.http.routers.alertmanager.entrypoints: ${TRAEFIK_WEB_ENTRYPOINT:-web}
+        traefik.http.services.alertmanager.loadbalancer.server.port: 9093
       placement:
         constraints:
           - node.role==manager
@@ -193,13 +191,13 @@ services:
         source: /var/lib/docker
         target: /var/lib/docker
         read_only: true
-    ports:
-      - 8080:8080
     networks:
       - monitor-net
     deploy:
       labels:
-        traefik.enable: 'false'
+        applicationPrefix: cadvisor
+        traefik.http.routers.cadvisor.entrypoints: ${TRAEFIK_WEB_ENTRYPOINT:-web}
+        traefik.http.services.cadvisor.loadbalancer.server.port: 8080
       mode: global
       restart_policy:
           condition: on-failure
@@ -208,8 +206,6 @@ services:
     image: grafana/grafana
     depends_on:
       - prometheus
-    ports:
-      - 3000:3000
     volumes:
       - type: volume
         source: grafana_data
