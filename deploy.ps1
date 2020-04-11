@@ -14,9 +14,10 @@ if ($IsProduction) {
     $env:TOP_LEVEL_DOMAIN = $TopLevelDomain
     $overrideFile = "$env:PWD/stack.production.yml"
 }
+$env:PWD = $env:PWD.Replace('C:/', '/c/')
 if ($Deploy)
 {
-    $env:PWD = $env:PWD.Replace('C:/', '/c/')
+    $env:TRAEFIK_WEB_ENTRYPOINT = 'websecure'
     docker stack deploy -c "$baseFile" -c "$overrideFile" seis635
 }
 else
