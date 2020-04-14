@@ -11,3 +11,7 @@
 
 * [Deploy, Configure, and Monitor Traefik with Prometheus and Grafana](https://youtu.be/3q-K4JDcH6I) by Brian Christner, 56K.Cloud.
 * [Logging & Monitoring Workshop](https://github.com/56kcloud/Training/blob/master/DockerCon/readme.md) by Brian Christner, 56K. Cloud.
+
+# Graylog
+
+* [Installing Graylog - Docker](http://docs.graylog.org/en/3.2/pages/installation/docker.html)

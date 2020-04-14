@@ -1,7 +1,7 @@
 version: "3.7"
 networks:
-  mongo-net:
-    name: mongo
+  graylog:
+    name: graylog
 
 secrets:
   mongo_keyfile:
@@ -13,6 +13,9 @@ secrets:
 
 volumes:
   mongodb_master_data: {}
+  esdata1: {}
+  esdata2: {}
+  esdata3: {}
 
 services:
   mongo1:
@@ -36,7 +39,7 @@ services:
         source: mongodb_master_data
         target: /bitnami/mongodb
     networks:
-      - mongo-net
+      - graylog
     deploy:
       labels:
         traefik.enable: 'false'
@@ -58,7 +61,7 @@ services:
       - source: mongo_keyfile
         target: mongo_keyfile
     networks:
-      - mongo-net
+      - graylog
     deploy:
       labels:
         traefik.enable: 'false'
@@ -80,7 +83,68 @@ services:
       - source: mongo_keyfile
         target: mongo_keyfile
     networks:
-      - mongo-net
+      - graylog
     deploy:
       labels:
         traefik.enable: 'false'
+  elasticsearch1:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.8.5
+    environment:
+      - http.host=0.0.0.0
+      - transport.host=localhost
+      - network.host=0.0.0.0
+      - cluster.name=graylog
+      - bootstrap.memory_lock=true
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata1:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - graylog
+  elasticsearch2:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.8.5
+    environment:
+      - http.host=0.0.0.0
+      - transport.host=localhost
+      - network.host=0.0.0.0
+      - cluster.name=graylog
+      - bootstrap.memory_lock=true
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "discovery.zen.ping.unicast.hosts=elasticsearch"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata2:/usr/share/elasticsearch/data
+    networks:
+      - graylog
+  elasticsearch3:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.8.5
+    environment:
+      - http.host=0.0.0.0
+      - transport.host=localhost
+      - network.host=0.0.0.0
+      - cluster.name=graylog
+      - bootstrap.memory_lock=true
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "discovery.zen.ping.unicast.hosts=elasticsearch"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata3:/usr/share/elasticsearch/data
+    networks:
+      - graylog
