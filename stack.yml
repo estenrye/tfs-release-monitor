@@ -10,7 +10,6 @@ volumes:
   prometheus_data: {}
   grafana_data: {}
   traefik_data: {}
-  mongodb_data: {}
 
 services:
   traefik:
@@ -242,17 +241,17 @@ services:
         traefik.http.routers.grafana.entrypoints: ${TRAEFIK_WEB_ENTRYPOINT:-web}
         traefik.http.services.grafana.loadbalancer.server.port: 3000
 
-  # mongodb:
-  #   image: mongodb:3
-  #   volumes:
-  #     - type: volume
-  #       source: mongodb_data
-  #       target: /data/db
-  #   deploy:
-  #     labels:
-  #       traefik.enable: 'false'
-  #   networks:
-  #     - internal
+  mongodb:
+    image: mongodb:3
+    volumes:
+      - type: volume
+        source: mongodb_data1
+        target: /data/db
+    deploy:
+      labels:
+        traefik.enable: 'false'
+    networks:
+      - internal
     
 secrets:
   traefik_usersfile:

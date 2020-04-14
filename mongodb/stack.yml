@@ -1,0 +1,86 @@
+version: "3.7"
+networks:
+  mongo-net:
+    name: mongo
+
+secrets:
+  mongo_keyfile:
+    external: true
+  mongo_root_username:
+    external: true
+  mongo_root_password:
+    external: true
+
+volumes:
+  mongodb_master_data: {}
+
+services:
+  mongo1:
+    image: bitnami/mongodb:4.2
+    environment:
+      MONGODB_ROOT_USER_FILE: /run/secrets/mongo_root_username
+      MONGODB_ROOT_PASSWORD_FILE: /run/secrets/mongo_root_password
+      MONGODB_REPLICA_SET_KEY_FILE: /run/secrets/mongo_keyfile
+      MONGODB_ADVERTISED_HOSTNAME: mongo1
+      MONGODB_REPLICA_SET_MODE: primary
+      MONGODB_REPLICA_SET_NAME: rs0
+    secrets:
+      - source: mongo_root_username
+        target: mongo_root_username
+      - source: mongo_root_password
+        target: mongo_root_password
+      - source: mongo_keyfile
+        target: mongo_keyfile
+    volumes:
+      - type: volume
+        source: mongodb_master_data
+        target: /bitnami/mongodb
+    networks:
+      - mongo-net
+    deploy:
+      labels:
+        traefik.enable: 'false'
+  mongo2:
+    image: bitnami/mongodb:4.2
+    environment:
+      MONGODB_ROOT_USER_FILE: /run/secrets/mongo_root_username
+      MONGODB_PRIMARY_ROOT_PASSWORD_FILE: /run/secrets/mongo_root_password
+      MONGODB_REPLICA_SET_KEY_FILE: /run/secrets/mongo_keyfile
+      MONGODB_ADVERTISED_HOSTNAME: mongo2
+      MONGODB_PRIMARY_HOST: mongo1
+      MONGODB_REPLICA_SET_MODE: secondary
+      MONGODB_REPLICA_SET_NAME: rs0
+    secrets:
+      - source: mongo_root_username
+        target: mongo_root_username
+      - source: mongo_root_password
+        target: mongo_root_password
+      - source: mongo_keyfile
+        target: mongo_keyfile
+    networks:
+      - mongo-net
+    deploy:
+      labels:
+        traefik.enable: 'false'
+  mongo3:
+    image: bitnami/mongodb:4.2
+    environment:
+      MONGODB_ROOT_USER_FILE: /run/secrets/mongo_root_username
+      MONGODB_PRIMARY_ROOT_PASSWORD_FILE: /run/secrets/mongo_root_password
+      MONGODB_REPLICA_SET_KEY_FILE: /run/secrets/mongo_keyfile
+      MONGODB_ADVERTISED_HOSTNAME: mongo3
+      MONGODB_PRIMARY_HOST: mongo1
+      MONGODB_REPLICA_SET_MODE: secondary
+      MONGODB_REPLICA_SET_NAME: rs0
+    secrets:
+      - source: mongo_root_username
+        target: mongo_root_username
+      - source: mongo_root_password
+        target: mongo_root_password
+      - source: mongo_keyfile
+        target: mongo_keyfile
+    networks:
+      - mongo-net
+    deploy:
+      labels:
+        traefik.enable: 'false'
