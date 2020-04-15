@@ -148,3 +148,9 @@ services:
       - esdata3:/usr/share/elasticsearch/data
     networks:
       - graylog
+  # graylog1:
+  #   image: graylog/graylog:3.2
+  #   environment:
+  #     GRAYLOG_PASSWORD_SECRET: ''
+  #     GRAYLOG_ROOT_PASSWORD_SHA2: ''
+  #     GRAYLOG_HTTP_EXTERNAL_URI: https://graylog.${TOP_LEVEL_DOMAIN}
