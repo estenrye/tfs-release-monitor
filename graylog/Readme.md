@@ -21,7 +21,7 @@ docker run --rm estenrye/mongodb-authkey-generator | docker secret create mongo_
 ## Root Username Secret creation
 
 ```bash
-echo 'root-username' | docker secret create mongo_root_username -
+echo 'database-password' | docker secret create mongo_database_password -
 ```
 
 ## Root Password Secret creation
@@ -30,3 +30,20 @@ echo 'root-username' | docker secret create mongo_root_username -
 echo 'root-password' | docker secret create mongo_root_password -
 ```
 
+# Configuring Graylog Cluster Secrets
+
+## Generating a docker secret for Graylog's password secret
+
+```bash
+docker run --rm estenrye/graylog-password-secret-generator 96 | docker secret create graylog_password_secret -
+```
+
+## Generating a docker secret for Graylog's Root User Password Hash
+
+```bash
+docker run --rm estenrye/graylog-root-password-hasher yourpasswordhere | docker secret create graylog_root_password -
+```
+
+## Generating a docker secret for Graylog's MongoDB Connection String
+
+echo 'mongodb://grayloguser:secret@mongo1:27017,mongo2:27017,mongo3:27017/graylog | docker secret create graylog_mongodb_uri

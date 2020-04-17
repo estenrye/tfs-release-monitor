@@ -12,5 +12,5 @@ docker build -t estenrye/htpasswd .\dockerfiles\htpasswd
 ## Generating a docker secret for Traefik's Basic Auth Middleware
 
 ```bash
-docker run estenrye/htpasswd username password | docker secret create traefik_usersfile -
+docker run --rm estenrye/htpasswd username password | docker secret create traefik_usersfile -
 ```

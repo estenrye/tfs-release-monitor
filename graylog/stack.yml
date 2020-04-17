@@ -6,13 +6,21 @@ networks:
 secrets:
   mongo_keyfile:
     external: true
-  mongo_root_username:
+  mongo_database_password:
     external: true
   mongo_root_password:
     external: true
+  graylog_password_secret:
+    external: true
+  graylog_root_password:
+    external: true
+  graylog_mongodb_uri:
+    external: true
+  
 
 volumes:
   mongodb_master_data: {}
+  graylog_data: {}
   esdata1: {}
   esdata2: {}
   esdata3: {}
@@ -21,19 +29,19 @@ services:
   mongo1:
     image: bitnami/mongodb:4.2
     environment:
-      MONGODB_ROOT_USER_FILE: /run/secrets/mongo_root_username
+      MONGODB_ROOT_USER_FILE: root
       MONGODB_ROOT_PASSWORD_FILE: /run/secrets/mongo_root_password
       MONGODB_REPLICA_SET_KEY_FILE: /run/secrets/mongo_keyfile
       MONGODB_ADVERTISED_HOSTNAME: mongo1
       MONGODB_REPLICA_SET_MODE: primary
       MONGODB_REPLICA_SET_NAME: rs0
+      MONGODB_DATABASE: graylog
+      MONGODB_USERNAME: graylog
+      MONGODB_PASSWORD_FILE: /run/secrets/mongo_database_password
     secrets:
-      - source: mongo_root_username
-        target: mongo_root_username
-      - source: mongo_root_password
-        target: mongo_root_password
-      - source: mongo_keyfile
-        target: mongo_keyfile
+      - mongo_root_password
+      - mongo_database_password
+      - mongo_keyfile
     volumes:
       - type: volume
         source: mongodb_master_data
@@ -46,20 +54,16 @@ services:
   mongo2:
     image: bitnami/mongodb:4.2
     environment:
-      MONGODB_ROOT_USER_FILE: /run/secrets/mongo_root_username
+      MONGODB_ROOT_USER: root
       MONGODB_PRIMARY_ROOT_PASSWORD_FILE: /run/secrets/mongo_root_password
       MONGODB_REPLICA_SET_KEY_FILE: /run/secrets/mongo_keyfile
-      MONGODB_ADVERTISED_HOSTNAME: mongo2
+      MONGODB_ADVERTISED_HOSTNAME: mongo3
       MONGODB_PRIMARY_HOST: mongo1
       MONGODB_REPLICA_SET_MODE: secondary
       MONGODB_REPLICA_SET_NAME: rs0
     secrets:
-      - source: mongo_root_username
-        target: mongo_root_username
-      - source: mongo_root_password
-        target: mongo_root_password
-      - source: mongo_keyfile
-        target: mongo_keyfile
+      - mongo_root_password
+      - mongo_keyfile
     networks:
       - graylog
     deploy:
@@ -68,7 +72,7 @@ services:
   mongo3:
     image: bitnami/mongodb:4.2
     environment:
-      MONGODB_ROOT_USER_FILE: /run/secrets/mongo_root_username
+      MONGODB_ROOT_USER: root
       MONGODB_PRIMARY_ROOT_PASSWORD_FILE: /run/secrets/mongo_root_password
       MONGODB_REPLICA_SET_KEY_FILE: /run/secrets/mongo_keyfile
       MONGODB_ADVERTISED_HOSTNAME: mongo3
@@ -76,12 +80,8 @@ services:
       MONGODB_REPLICA_SET_MODE: secondary
       MONGODB_REPLICA_SET_NAME: rs0
     secrets:
-      - source: mongo_root_username
-        target: mongo_root_username
-      - source: mongo_root_password
-        target: mongo_root_password
-      - source: mongo_keyfile
-        target: mongo_keyfile
+      - mongo_root_password
+      - mongo_keyfile
     networks:
       - graylog
     deploy:
@@ -98,10 +98,6 @@ services:
       - http.cors.enabled=true
       - http.cors.allow-origin=*
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
     volumes:
       - esdata1:/usr/share/elasticsearch/data
     ports:
@@ -120,10 +116,6 @@ services:
       - http.cors.allow-origin=*
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - "discovery.zen.ping.unicast.hosts=elasticsearch"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
     volumes:
       - esdata2:/usr/share/elasticsearch/data
     networks:
@@ -140,17 +132,58 @@ services:
       - http.cors.allow-origin=*
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - "discovery.zen.ping.unicast.hosts=elasticsearch"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
     volumes:
       - esdata3:/usr/share/elasticsearch/data
     networks:
       - graylog
-  # graylog1:
+  graylog1:
+    image: graylog/graylog:3.2
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+      - elasticsearch1
+      - elasticsearch2
+      - elasticsearch3
+    environment:
+      GRAYLOG_IS_MASTER: 'true'
+      GRAYLOG_PASSWORD_SECRET__FILE: /run/secrets/graylog_password_secret
+      GRAYLOG_ROOT_PASSWORD_SHA2__FILE: /run/secrets/graylog_root_password
+      GRAYLOG_MONGODB_URI__FILE: /run/secrets/graylog_mongodb_uri
+      GRAYLOG_ROOT_EMAIL: ${LETS_ENCRYPT_EMAIL}
+      GRAYLOG_HTTP_EXTERNAL_URI: https://graylog.${TOP_LEVEL_DOMAIN}/
+      GRAYLOG_ELASTICSEARCH_HOSTS: http://elasticsearch1:9200,http://elasticsearch2:9200,http://elasticsearch3:9200
+      GRAYLOG_ALLOW_LEADING_WILDCARD_SEARCHES: 'false'
+      GRAYLOG_ALLOW_HIGHLIGHTING: 'false'
+    secrets:
+      - graylog_password_secret
+      - graylog_root_password
+      - graylog_mongodb_uri
+    networks:
+      - graylog
+    volumes:
+      - graylog_data:/usr/share/graylog/data
+  # graylog2:
   #   image: graylog/graylog:3.2
   #   environment:
-  #     GRAYLOG_PASSWORD_SECRET: ''
-  #     GRAYLOG_ROOT_PASSWORD_SHA2: ''
+  #     GRAYLOG_IS_MASTER: 'false'
+  #     GRAYLOG_PASSWORD_SECRET__FILE: /run/secrets/graylog_password_secret
+  #     GRAYLOG_ROOT_PASSWORD_SHA2__FILE: /run/secrets/graylog_root_password
+  #     GRAYLOG_MONGODB_URI__FILE: /run/secrets/graylog_mongodb_uri
+  #     GRAYLOG_ROOT_EMAIL: ${LETS_ENCRYPT_EMAIL}
   #     GRAYLOG_HTTP_EXTERNAL_URI: https://graylog.${TOP_LEVEL_DOMAIN}
+  #     GRAYLOG_ELASTICSEARCH_HOSTS: http://elasticsearch1:9200,http://elasticsearch2:9200,http://elasticsearch3:9200
+  #     GRAYLOG_ALLOW_LEADING_WILDCARD_SEARCHES: 'false'
+  #     GRAYLOG_ALLOW_HIGHLIGHTING: 'false'
+  # graylog3:
+  #   image: graylog/graylog:3.2
+  #   environment:
+  #     GRAYLOG_IS_MASTER: 'false'
+  #     GRAYLOG_PASSWORD_SECRET__FILE: /run/secrets/graylog_password_secret
+  #     GRAYLOG_ROOT_PASSWORD_SHA2__FILE: /run/secrets/graylog_root_password
+  #     GRAYLOG_MONGODB_URI__FILE: /run/secrets/graylog_mongodb_uri
+  #     GRAYLOG_ROOT_EMAIL: ${LETS_ENCRYPT_EMAIL}
+  #     GRAYLOG_HTTP_EXTERNAL_URI: https://graylog.${TOP_LEVEL_DOMAIN}
+  #     GRAYLOG_ELASTICSEARCH_HOSTS: http://elasticsearch1:9200,http://elasticsearch2:9200,http://elasticsearch3:9200
+  #     GRAYLOG_ALLOW_LEADING_WILDCARD_SEARCHES: 'false'
+  #     GRAYLOG_ALLOW_HIGHLIGHTING: 'false'
