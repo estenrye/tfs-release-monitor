@@ -18,18 +18,6 @@ in the Swarm.
 docker run --rm estenrye/mongodb-authkey-generator | docker secret create mongo_keyfile -
 ```
 
-## Root Username Secret creation
-
-```bash
-echo 'database-password' | docker secret create mongo_database_password -
-```
-
-## Root Password Secret creation
-
-```bash
-echo 'root-password' | docker secret create mongo_root_password -
-```
-
 # Configuring Graylog Cluster Secrets
 
 ## Generating a docker secret for Graylog's password secret
