@@ -29,9 +29,11 @@ docker run --rm estenrye/graylog-password-secret-generator 96 | docker secret cr
 ## Generating a docker secret for Graylog's Root User Password Hash
 
 ```bash
-docker run --rm estenrye/graylog-root-password-hasher yourpasswordhere | docker secret create graylog_root_password -
+docker run --rm estenrye/graylog-root-password-hasher 'yourpasswordhere' | docker secret create graylog_root_password -
 ```
 
 ## Generating a docker secret for Graylog's MongoDB Connection String
 
-echo 'mongodb://grayloguser:secret@mongo1:27017,mongo2:27017,mongo3:27017/graylog | docker secret create graylog_mongodb_uri
+```bash
+echo 'mongodb://graylog:graylog@mongo1,mongo2,mongo3/graylog' | docker secret create graylog_mongodb_uri -
+```
