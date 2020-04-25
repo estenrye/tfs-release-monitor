@@ -1,0 +1,67 @@
+version: "3.7"
+networks:
+  graylog:
+    name: graylog
+volumes:
+  esdata1: {}
+  esdata2: {}
+  esdata3: {}
+services:
+  elasticsearch1:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.8.5
+    environment:
+      - http.host=0.0.0.0
+      - transport.host=localhost
+      - network.host=0.0.0.0
+      - cluster.name=graylog
+      - bootstrap.memory_lock=true
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - esdata1:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - graylog
+    deploy:
+      labels:
+        traefik.enable: 'false'
+  elasticsearch2:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.8.5
+    environment:
+      - http.host=0.0.0.0
+      - transport.host=localhost
+      - network.host=0.0.0.0
+      - cluster.name=graylog
+      - bootstrap.memory_lock=true
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "discovery.zen.ping.unicast.hosts=elasticsearch"
+    volumes:
+      - esdata2:/usr/share/elasticsearch/data
+    networks:
+      - graylog
+    deploy:
+      labels:
+        traefik.enable: 'false'
+  elasticsearch3:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.8.5
+    environment:
+      - http.host=0.0.0.0
+      - transport.host=localhost
+      - network.host=0.0.0.0
+      - cluster.name=graylog
+      - bootstrap.memory_lock=true
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "discovery.zen.ping.unicast.hosts=elasticsearch"
+    volumes:
+      - esdata3:/usr/share/elasticsearch/data
+    networks:
+      - graylog
+    deploy:
+      labels:
+        traefik.enable: 'false'
