@@ -1,0 +1,42 @@
+version: "3.7"
+networks:
+  dmz:
+    name: public
+    external: true
+  monitor-net:
+    name: monitor
+secrets:
+  traefik_usersfile:
+    external: true
+services:
+  cadvisor:
+    image: google/cadvisor
+    volumes:
+      - type: bind
+        source: /
+        target: /rootfs
+        read_only: true
+      - type: bind
+        source: /var/run
+        target: /var/run
+      - type: bind
+        source: /sys
+        target: /sys
+        read_only: true
+      - type: bind
+        source: /var/lib/docker
+        target: /var/lib/docker
+        read_only: true
+    networks:
+      - monitor-net
+      - dmz
+    deploy:
+      labels:
+        applicationPrefix: cadvisor
+        traefik.http.routers.cadvisor.entrypoints: ${TRAEFIK_WEB_ENTRYPOINT:-web}
+        traefik.http.services.cadvisor.loadbalancer.server.port: 8080
+        traefik.http.routers.cadvisor.middlewares: auth
+        traefik.http.middlewares.auth.basicauth.usersfile: /run/secrets/usersfile
+      mode: global
+      restart_policy:
+          condition: on-failure

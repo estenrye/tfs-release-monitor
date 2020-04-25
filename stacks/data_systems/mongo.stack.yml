@@ -2,6 +2,7 @@ version: "3.7"
 networks:
   graylog:
     name: graylog
+    external: true
 volumes:
   mongodb_master_data: {}
 secrets:

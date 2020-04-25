@@ -2,18 +2,13 @@ param(
     [string]$LetsEncryptEmail = 'noreply@your-domain.com',
     [string]$TopLevelDomain = 'your-domain.com',
     [switch]$IsProduction,
-    [switch]$Deploy
+    [switch]$DeployDataSystems
     
 )
-$env:PWD = ${PSScriptRoot}.Replace('\', '/')
+$env:PWD = "${PSScriptRoot}".Replace('\', '/')
 $env:TOP_LEVEL_DOMAIN = 'localhost'
 $env:TRAEFIK_WEB_ENTRYPOINT = 'web'
 $env:LETS_ENCRYPT_EMAIL = $LetsEncryptEmail
-
-$baseFile = "${PSScriptRoot}/stacks/stack.yml"
-$overrideFile = "${PSScriptRoot}/stacks/stack.development.yml"
-$mongoFile = "${PSScriptRoot}/stacks/stack.mongo.yml"
-$elasticSearchFile = "${PSScriptRoot}/stacks/stack.elasticsearch.yml"
 
 if ($IsProduction) {
     $env:TOP_LEVEL_DOMAIN = $TopLevelDomain
@@ -21,14 +16,18 @@ if ($IsProduction) {
     $overrideFile = "${PSScriptRoot}/stacks/stack.production.yml"
 }
 
-$env:PWD = $env:PWD.Replace('C:/', '/c/')
-if ($Deploy)
+if ($DeployDataSystems)
 {
-    docker stack deploy -c ${baseFile} -c ${overrideFile} -c ${mongoFile} -c ${elasticSearchFile} seis635
+
 }
-else
-{
-    $baseFile
-    $overrideFile
-    docker-compose -f $baseFile -f $overrideFile -f ${mongoFile} -f ${elasticSearchFile} config
-}
+
+# if ($Deploy)
+# {
+#     docker stack deploy -c ${baseFile} -c ${overrideFile} -c ${mongoFile} -c ${elasticSearchFile} seis635
+# }
+# else
+# {
+#     $baseFile
+#     $overrideFile
+#     docker-compose -f $baseFile -f $overrideFile -f ${mongoFile} -f ${elasticSearchFile} config
+# }

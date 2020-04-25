@@ -1,0 +1,35 @@
+version: "3.7"
+networks:
+  dmz:
+    name: public
+    external: true
+  monitor-net:
+    name: monitor
+secrets:
+  traefik_usersfile:
+    external: true
+services:
+  alertmanager:
+    image: prom/alertmanager
+    volumes:
+      - type: bind
+        source: ${PWD}/alertmanager
+        target: /etc/alertmanager
+    networks:
+      - monitor-net
+      - dmz
+    command:
+      - --config.file=/etc/alertmanager/config.yml
+      - --storage.path=/alertmanager
+    deploy:
+      labels:
+        applicationPrefix: alertmanager
+        traefik.http.routers.alertmanager.entrypoints: ${TRAEFIK_WEB_ENTRYPOINT:-web}
+        traefik.http.services.alertmanager.loadbalancer.server.port: 9093
+        traefik.http.routers.alertmanager.middlewares: auth
+        traefik.http.middlewares.auth.basicauth.usersfile: /run/secrets/usersfile
+      placement:
+        constraints:
+          - node.role==manager
+      restart_policy:
+        condition: on-failure    
