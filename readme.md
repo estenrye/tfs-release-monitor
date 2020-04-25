@@ -26,14 +26,6 @@ This project provides a service hook target for TFS 2018 and Azure DevOps.
    docker run estenrye/htpasswd username password | docker secret create traefik_usersfile -
    ```
 
-### Grafana Admin User Password
-
-1. To create the secret:
-
-   ```bash
-   echo 'password' | docker secret create grafana_admin_password -
-   ```
-
 ## Deploying the stack to Docker Swarm
 
 ### Initialize the swarm
