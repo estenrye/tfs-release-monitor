@@ -5,6 +5,7 @@ networks:
     external: true
   monitor-net:
     name: monitor
+    external: true
 secrets:
   traefik_usersfile:
     external: true
@@ -13,7 +14,7 @@ services:
     image: prom/alertmanager
     volumes:
       - type: bind
-        source: ${PWD}/alertmanager
+        source: ${WORKING_DIRECTORY}/alertmanager
         target: /etc/alertmanager
     networks:
       - monitor-net

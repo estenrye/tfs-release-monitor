@@ -5,6 +5,7 @@ networks:
     external: true
   monitor-net:
     name: monitor
+    external: true
 secrets:
   traefik_usersfile:
     external: true

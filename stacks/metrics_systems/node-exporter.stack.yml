@@ -2,6 +2,7 @@ version: "3.7"
 networks:
   monitor-net:
     name: monitor
+    external: true
 services:
   node-exporter:
     image: prom/node-exporter

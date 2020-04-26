@@ -5,9 +5,9 @@ networks:
     external: true
   monitor-net:
     name: monitor
-secrets:
-  grafana_admin_password:
     external: true
+volumes:
+  grafana_data: {}
 services:
   grafana:
     image: grafana/grafana
@@ -18,15 +18,12 @@ services:
         source: grafana_data
         target: /var/lib/grafana
       - type: bind
-        source: ${PWD}/grafana/provisioning
+        source: ${WORKING_DIRECTORY}/grafana/provisioning
         target: /etc/grafana/provisioning
     environment:
       GF_USERS_ALLOW_SIGN_UP: 'false'
       GF_SECURITY_ADMIN_PASSWORD: grafana
       GF_INSTALL_PLUGINS: grafana-piechart-panel
-    secrets:
-      - source: grafana_admin_password
-        target: admin_password
     networks:
       - monitor-net
       - dmz

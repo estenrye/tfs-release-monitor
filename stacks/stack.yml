@@ -2,6 +2,7 @@ version: "3.7"
 networks:
   dmz:
     name: public
+    external: true
 volumes:
 services:
   redis:

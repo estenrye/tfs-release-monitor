@@ -2,10 +2,10 @@ version: "3.7"
 networks:
   dmz:
     name: public
-  internal:
-    name: private
+    external: true
   monitor-net:
     name: monitor
+    external: true
 volumes:
   traefik_data: {}
 secrets:
