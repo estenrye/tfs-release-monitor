@@ -1,0 +1,6 @@
+version: "3.7"
+volumes:
+  traefik_data:
+    driver: nfs
+    driver_opts:
+      share: a.freenas.lab.ryezone.com:/mnt/main/home-lab-storage/traefik

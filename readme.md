@@ -26,7 +26,7 @@ This project provides a service hook target for TFS 2018 and Azure DevOps.
 2. To create the secret:
 
    ```bash
-   docker run estenrye/htpasswd 'username' 'password' | docker secret create traefik_usersfile -
+   docker run --rm estenrye/htpasswd 'username' 'password' | docker secret create traefik_usersfile -
    ```
 
 ### Generating the Keyfile

@@ -7,6 +7,7 @@ services:
       - --api
       - --api.dashboard
       - --api.debug=false
+      - --api.insecure=false
       - --entryPoints.web.address=:80
       - --log
       - --log.format=json
@@ -22,7 +23,14 @@ services:
       - --providers.docker.watch=true
       - --tracing=true
       - --tracing.serviceName=traefik
-      - --tracing.jaeger.collector.endpoint=http://jaeger:14268/api/traces?format=jaeger.thrift
+      - --tracing.jaeger.samplingServerURL=http://localhost:5778/sampling
+      - --tracing.jaeger.samplingType=const
+      - --tracing.jaeger.samplingParam=1.0
+      - --tracing.jaeger.localAgentHostPort=127.0.0.1:6831
+      - --tracing.jaeger.gen128Bit
+      - --tracing.jaeger.propagation=jaeger
+      - --tracing.jaeger.traceContextHeaderName=uber-trace-id
+      - --tracing.jaeger.collector.endpoint=http://jaeger-collector:14268/api/traces?format=jaeger.thrift
       - --entryPoints.metrics.address=:8082
       - --metrics.prometheus=true
       - --metrics.prometheus.buckets=0.100000, 0.300000, 1.200000, 5.000000
