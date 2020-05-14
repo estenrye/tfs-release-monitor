@@ -6,8 +6,6 @@ networks:
   monitor-net:
     name: monitor
     external: true
-volumes:
-  traefik_data: {}
 secrets:
   traefik_usersfile:
     external: true
@@ -19,8 +17,8 @@ services:
         source: /var/run/docker.sock
         target: /var/run/docker.sock
         read_only: true
-      - type: volume
-        source: traefik_data
+      - type: bind
+        source: /mnt/traefik_config
         target: /opt/data
     ports:
       - target: 443

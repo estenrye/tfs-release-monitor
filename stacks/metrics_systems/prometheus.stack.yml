@@ -1,6 +1,4 @@
 version: "3.7"
-volumes:
-  prometheus_data: {}
 networks:
   dmz:
     name: public
@@ -15,11 +13,11 @@ services:
   prometheus:
     image: prom/prometheus
     volumes:
-      - type: volume
-        source: prometheus_data
+      - type: bind
+        source: /mnt/prometheus_data
         target: /prometheus
       - type: bind
-        source: ${WORKING_DIRECTORY}/prometheus
+        source: /mnt/prometheus_config
         target: /etc/prometheus
     command:
       - --config.file=/etc/prometheus/prometheus.yml
@@ -34,7 +32,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.role==manager
+          - node.role==worker
       restart_policy:
         condition: on-failure
       labels:

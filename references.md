@@ -15,3 +15,6 @@
 # Graylog
 
 * [Installing Graylog - Docker](http://docs.graylog.org/en/3.2/pages/installation/docker.html)
+
+
+https://github.com/wanghaibo/volume-netshare-plugin

@@ -6,19 +6,17 @@ networks:
   monitor-net:
     name: monitor
     external: true
-volumes:
-  grafana_data: {}
 services:
   grafana:
     image: grafana/grafana
     depends_on:
       - prometheus
     volumes:
-      - type: volume
-        source: grafana_data
+      - type: bind
+        source: /mnt/grafana_data
         target: /var/lib/grafana
       - type: bind
-        source: ${WORKING_DIRECTORY}/grafana/provisioning
+        source: /mnt/grafana_config
         target: /etc/grafana/provisioning
     environment:
       GF_USERS_ALLOW_SIGN_UP: 'false'
@@ -27,11 +25,11 @@ services:
     networks:
       - monitor-net
       - dmz
-    user: "104"
+    user: "472"
     deploy:
       placement:
         constraints:
-          - node.role==manager
+          - node.role==worker
       restart_policy:
         condition: on-failure
       labels:

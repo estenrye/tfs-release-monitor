@@ -14,7 +14,7 @@ services:
     image: prom/alertmanager
     volumes:
       - type: bind
-        source: ${WORKING_DIRECTORY}/alertmanager
+        source: /mnt/alertmanager
         target: /etc/alertmanager
     networks:
       - monitor-net
@@ -31,6 +31,6 @@ services:
         traefik.http.middlewares.auth.basicauth.usersfile: /run/secrets/usersfile
       placement:
         constraints:
-          - node.role==manager
+          - node.role==worker
       restart_policy:
         condition: on-failure    
