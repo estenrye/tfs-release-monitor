@@ -1,0 +1,64 @@
+version: "3.7"
+networks:
+  dmz:
+    name: public
+    external: true
+  monitor-net:
+    name: monitor
+    external: true
+secrets:
+  traefik_usersfile:
+    external: true
+services:
+  traefik:
+    image: traefik:2.2
+    volumes:
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        read_only: true
+      - type: bind
+        source: /mnt/traefik_config
+        target: /opt/data
+    ports:
+      - target: 443
+        published: 443
+        protocol: tcp
+        mode: ingress
+      - target: 80
+        published: 80
+        protocol: tcp
+      - target: 8080
+        published: 8080
+        protocol: tcp
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 5
+        window: 20s
+      update_config:
+        failure_action: rollback
+        monitor: 30s
+        order: start-first
+      labels:
+        traefik.http.routers.api.rule: Host(`traefik.${TOP_LEVEL_DOMAIN:-localhost}`)
+        traefik.http.routers.api.service: api@internal
+        traefik.http.routers.api.middlewares: auth
+        traefik.http.routers.api.entrypoints: ${TRAEFIK_WEB_ENTRYPOINT:-web},traefik
+        traefik.http.routers.ping.rule: PathPrefix(`/ping`)
+        traefik.http.routers.ping.service: ping@internal
+        traefik.http.routers.ping.middlewares: auth
+        traefik.http.routers.ping.entrypoints: ${TRAEFIK_WEB_ENTRYPOINT:-web},traefik
+        traefik.http.middlewares.auth.basicauth.usersfile: /run/secrets/usersfile
+        # Dummy service for Swarm port detection. The port can be any valid integer value.
+        traefik.http.services.dummy-svc.loadbalancer.server.port: 9999
+    networks:
+      - dmz
+    secrets:
+      - source: traefik_usersfile
+        target: usersfile

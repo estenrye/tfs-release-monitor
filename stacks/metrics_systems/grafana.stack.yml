@@ -1,0 +1,38 @@
+version: "3.7"
+networks:
+  dmz:
+    name: public
+    external: true
+  monitor-net:
+    name: monitor
+    external: true
+services:
+  grafana:
+    image: grafana/grafana
+    depends_on:
+      - prometheus
+    volumes:
+      - type: bind
+        source: /mnt/grafana_data
+        target: /var/lib/grafana
+      - type: bind
+        source: /mnt/grafana_config
+        target: /etc/grafana/provisioning
+    environment:
+      GF_USERS_ALLOW_SIGN_UP: 'false'
+      GF_SECURITY_ADMIN_PASSWORD: grafana
+      GF_INSTALL_PLUGINS: grafana-piechart-panel
+    networks:
+      - monitor-net
+      - dmz
+    user: "472"
+    deploy:
+      placement:
+        constraints:
+          - node.role==worker
+      restart_policy:
+        condition: on-failure
+      labels:
+        applicationPrefix: grafana
+        traefik.http.routers.grafana.entrypoints: ${TRAEFIK_WEB_ENTRYPOINT:-web}
+        traefik.http.services.grafana.loadbalancer.server.port: 3000

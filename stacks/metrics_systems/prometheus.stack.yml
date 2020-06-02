@@ -1,0 +1,43 @@
+version: "3.7"
+networks:
+  dmz:
+    name: public
+    external: true
+  monitor-net:
+    name: monitor
+    external: true
+secrets:
+  traefik_usersfile:
+    external: true
+services:
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - type: bind
+        source: /mnt/prometheus_data
+        target: /prometheus
+      - type: bind
+        source: /mnt/prometheus_config
+        target: /etc/prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.console.libraries=/usr/share/prometheus/console_libraries
+      - --web.console.templates=/usr/share/prometheus/consoles
+    depends_on:
+      - cadvisor
+    networks:
+      - monitor-net
+      - dmz
+    deploy:
+      placement:
+        constraints:
+          - node.role==worker
+      restart_policy:
+        condition: on-failure
+      labels:
+        applicationPrefix: prometheus
+        traefik.http.middlewares.auth.basicauth.usersfile: /run/secrets/usersfile
+        traefik.http.routers.prometheus.middlewares: auth
+        traefik.http.routers.prometheus.entrypoints: ${TRAEFIK_WEB_ENTRYPOINT:-web}
+        traefik.http.services.prometheus.loadbalancer.server.port: 9090

@@ -1,0 +1,82 @@
+version: "3.7"
+networks:
+  graylog:
+    name: graylog
+    external: true
+  dmz:
+    name: public
+    external: true
+secrets:
+  graylog_password_secret:
+    external: true
+  graylog_root_password:
+    external: true
+  graylog_mongodb_uri:
+    external: true
+volumes:
+  graylog_data: {}
+services:
+  graylog_master:
+    image: graylog/graylog:3.2
+    environment:
+      GRAYLOG_IS_MASTER: 'true'
+      GRAYLOG_PASSWORD_SECRET__FILE: /run/secrets/graylog_password_secret
+      GRAYLOG_ROOT_PASSWORD_SHA2__FILE: /run/secrets/graylog_root_password
+      GRAYLOG_MONGODB_URI__FILE: /run/secrets/graylog_mongodb_uri
+      GRAYLOG_ROOT_EMAIL: ${LETS_ENCRYPT_EMAIL}
+      GRAYLOG_HTTP_EXTERNAL_URI: ${SCHEME}://graylog.${TOP_LEVEL_DOMAIN}/
+      GRAYLOG_ELASTICSEARCH_HOSTS: http://elasticsearch1:9200,http://elasticsearch2:9200,http://elasticsearch3:9200
+      GRAYLOG_ALLOW_LEADING_WILDCARD_SEARCHES: 'false'
+      GRAYLOG_ALLOW_HIGHLIGHTING: 'false'
+    secrets:
+      - graylog_password_secret
+      - graylog_root_password
+      - graylog_mongodb_uri
+    ports:
+      # Syslog TCP
+      - 1514:1514
+      # Syslog UDP
+      - 1514:1514/udp
+      # GELF TCP
+      - 12201:12201
+      # GELF UDP
+      - 12201:12201/udp
+    networks:
+      - graylog
+      - dmz
+    volumes:
+      - graylog_data:/usr/share/graylog/data
+    deploy:
+      placement:
+        constraints:
+          - node.role==manager
+      restart_policy:
+        condition: on-failure
+      labels:
+        applicationPrefix: graylog
+        traefik.http.routers.graylog.entrypoints: ${TRAEFIK_WEB_ENTRYPOINT:-web}
+        traefik.http.services.graylog.loadbalancer.server.port: 9000
+  # graylog2:
+  #   image: graylog/graylog:3.2
+  #   environment:
+  #     GRAYLOG_IS_MASTER: 'false'
+  #     GRAYLOG_PASSWORD_SECRET__FILE: /run/secrets/graylog_password_secret
+  #     GRAYLOG_ROOT_PASSWORD_SHA2__FILE: /run/secrets/graylog_root_password
+  #     GRAYLOG_MONGODB_URI__FILE: /run/secrets/graylog_mongodb_uri
+  #     GRAYLOG_ROOT_EMAIL: ${LETS_ENCRYPT_EMAIL}
+  #     GRAYLOG_HTTP_EXTERNAL_URI: https://graylog.${TOP_LEVEL_DOMAIN}
+  #     GRAYLOG_ELASTICSEARCH_HOSTS: http://elasticsearch1:9200,http://elasticsearch2:9200,http://elasticsearch3:9200
+  #     GRAYLOG_ALLOW_LEADING_WILDCARD_SEARCHES: 'false'
+  #     GRAYLOG_ALLOW_HIGHLIGHTING: 'false'
+  # graylog3:
+  #   image: graylog/graylog:3.2
+  #   environment:
+  #     GRAYLOG_IS_MASTER: 'false'
+  #     GRAYLOG_PASSWORD_SECRET__FILE: /run/secrets/graylog_password_secret
+  #     GRAYLOG_ROOT_PASSWORD_SHA2__FILE: /run/secrets/graylog_root_password
+  #     GRAYLOG_MONGODB_URI__FILE: /run/secrets/graylog_mongodb_uri
+  #     GRAYLOG_ROOT_EMAIL: ${LETS_ENCRYPT_EMAIL}
+  #     GRAYLOG_HTTP_EXTERNAL_URI: https://graylog.${TOP_LEVEL_DOMAIN}
+  #     GRAYLOG_ELASTICSEARCH_HOSTS: http://elasticsearch1:9200,http://elasticsearch2:9200,http://elasticsearch3:9200
+  #     GRAYLOG_ALLOW_LEADING_WILDCARD_SEARCHES: 'false'
+  #     GRAYLOG_ALLOW_HIGHLIGHTING: 'false'

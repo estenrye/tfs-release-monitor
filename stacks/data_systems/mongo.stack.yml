@@ -2,11 +2,10 @@ version: "3.7"
 networks:
   graylog:
     name: graylog
+    external: true
 volumes:
   mongodb_master_data: {}
 secrets:
-  mongo_database_password:
-    external: true
   mongo_keyfile:
     external: true
 services:
@@ -26,7 +25,6 @@ services:
       labels:
         traefik.enable: 'false'
     secrets:
-      - mongo_database_password
       - mongo_keyfile
     volumes:
       - type: volume
@@ -48,7 +46,6 @@ services:
       labels:
         traefik.enable: 'false'
     secrets:
-      - mongo_database_password
       - mongo_keyfile
     networks:
       - graylog
@@ -66,7 +63,6 @@ services:
       labels:
         traefik.enable: 'false'
     secrets:
-      - mongo_database_password
       - mongo_keyfile
     networks:
       - graylog
